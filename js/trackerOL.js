@@ -9,12 +9,15 @@ var tracker = function(){
   var osmLayer;
   var peruskarttaLayer;
   var markerLayer;
+  var geoJSONlayer;
   
   var routeStyle = new OpenLayers.Style({
     strokeWidth: 7,
     strokeColor: "#93C740",
     strokeOpacity: 0.7
   });
+  
+  var lastPointTime = 0;
   
   function initialize(){
     map = new OpenLayers.Map('map');
@@ -44,7 +47,7 @@ var tracker = function(){
   }
   
   function getAllPoints() {
-    var geoJSONlayer = new OpenLayers.Layer.Vector("Reitti", {
+    geoJSONlayer = new OpenLayers.Layer.Vector("Reitti", {
       strategies: [new OpenLayers.Strategy.Fixed()],
       protocol: new OpenLayers.Protocol.HTTP({
         url: "service/geoJSON.php?featureType=route",
@@ -71,12 +74,17 @@ var tracker = function(){
         OpenLayers.Event.stop(evt);
       });
       
+      lastPointTime = data.features[0].properties.time;
+      
       markerLayer.addMarker(marker);
     });
   }
   
   function onMarkerSelect(marker){
-    var text = "Nykyinen sijainti";
+    var text = "Nykyinen sijainti klo: ";
+    var time = new Date(lastPointTime*1000);
+    text += ((time.getHours() + 2) < 10 ? "0" + (time.getHours() + 2) : (time.getHours() + 2));
+    text += ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
     
     var popup = new OpenLayers.Popup.FramedCloud("popup",
       marker.lonlat, null, text, null, true);
@@ -89,10 +97,28 @@ var tracker = function(){
     return new OpenLayers.Icon('http://www.openlayers.org/dev/img/marker.png',size,offset);
   }
   
+  // Update route on map
+  function updateRoute(){
+    getNewRoute();
+  }
+  
+  // Get new track points after alredy loaded
+  function getNewRoute(){
+    $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPointTime, function(data){
+      var geometry = format.parseGeometry(data.features[0].geometry);
+      
+      geometry.transform(new OpenLayers.Projection("EPSG:4326"),
+        map.getProjectionObject());
+      var feature = new OpenLayers.Feature.Vector(geometry);
+      geoJSONlayer.addFeatures(feature);
+    })
+  }
+  
   return {
     initialize: initialize,
     addPeruskarttaLayer: addPeruskarttaLayer,
     addOSMLayer: addOSMLayer,
-    getAllPoints: getAllPoints
+    getAllPoints: getAllPoints,
+    updateRoute: updateRoute
   }
 }();
