@@ -17,6 +17,9 @@ var tracker = function(){
     strokeOpacity: 0.7
   });
   
+  var format = new OpenLayers.Format.GeoJSON();
+  var projection = new OpenLayers.Projection("EPSG:4326");
+  
   var lastPointTime = 0;
   
   function initialize(){
@@ -29,7 +32,7 @@ var tracker = function(){
     addLastPoint();
     
     map.setCenter(new OpenLayers.LonLat(23.177327, 61.666618).transform(
-        new OpenLayers.Projection("EPSG:4326"),
+        projection,
         map.getProjectionObject()), 16
     );
       
@@ -51,7 +54,7 @@ var tracker = function(){
       strategies: [new OpenLayers.Strategy.Fixed()],
       protocol: new OpenLayers.Protocol.HTTP({
         url: "service/geoJSON.php?featureType=route",
-        format: new OpenLayers.Format.GeoJSON()
+        format: format
       }),
       styleMap: new OpenLayers.StyleMap(routeStyle)
     });
@@ -66,8 +69,7 @@ var tracker = function(){
     $.getJSON("service/geoJSON.php?featureType=currentLocation", function(data){
       var coord = data.features[0].geometry.coordinates;
       var marker = new OpenLayers.Marker(new OpenLayers.LonLat(coord[0], coord[1]).transform(
-        new OpenLayers.Projection("EPSG:4326"),
-        map.getProjectionObject()), getMarkerIcon());
+        projection, map.getProjectionObject()), getMarkerIcon());
       
       marker.events.register('mousedown', marker, function(evt){
         onMarkerSelect(marker);
@@ -107,8 +109,7 @@ var tracker = function(){
     $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPointTime, function(data){
       var geometry = format.parseGeometry(data.features[0].geometry);
       
-      geometry.transform(new OpenLayers.Projection("EPSG:4326"),
-        map.getProjectionObject());
+      geometry.transform(projection, map.getProjectionObject());
       var feature = new OpenLayers.Feature.Vector(geometry);
       geoJSONlayer.addFeatures(feature);
     })
