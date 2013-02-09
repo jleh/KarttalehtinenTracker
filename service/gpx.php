@@ -1,5 +1,5 @@
 <?php
-    //Antaa pisteet gpx muodossa
+    //Gives track on GPX file
     header("Content-disposition: attachment; filename=ilveshiihto.gpx");
     header("content-type: application/xml");
     include('yhteys.php');

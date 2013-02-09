@@ -1,5 +1,5 @@
 <?php
-//Antaa pisteet JSON muodossa
+//Gives all points in JSON
 include('yhteys.php');
 
 $kysely = $yhteys->prepare("SELECT * FROM gps ORDER BY time ASC");
