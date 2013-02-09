@@ -10,13 +10,15 @@ if($featureType == 'route'){
 else if($featureType == 'currentLocation'){
     printCurrentLocation();
 }
+else if($featureType == 'routeAfterTime'){
+    printRouteAfter($_GET['timestamp']);
+}
 
 function printRoute(){
     include('yhteys.php');
     $kysely = $yhteys->prepare("SELECT * FROM gps ORDER BY time ASC");
     $kysely->execute();
 
-    $points = array();
     $geometry = array();
     while($rivi = $kysely->fetch()){
         // TODO: Remove debug break and implement path splitting
@@ -48,11 +50,12 @@ function printCurrentLocation(){
     $kysely->execute();
 
     $points = array();
-    $geometry = array();
     $pointCoords = array(0, 0); // Point of current location
+    $time = 0;
     while($rivi = $kysely->fetch()){
         $pointCoords[0] = $rivi[long];
         $pointCoords[1] = $rivi[lat];
+        $time = $rivi[time];
 
         $points[] = array("time" => $rivi[time],
                           "lat" => $rivi[lat],
@@ -70,12 +73,47 @@ function printCurrentLocation(){
             "type" => "Point",
             "coordinates" => $pointCoords
         ),
-        "properties" => array("prop0" => "Current")
+        "properties" => array("time" => $time)
     );
 
     $output = array(
         "type" => "FeatureCollection",
         "features" => array( $currentLocation)
+    );
+
+    echo json_encode($output);
+}
+
+// Gets route after timestamp
+function printRouteAfter($time){
+    include('yhteys.php');
+    $kysely = $yhteys->prepare("SELECT * FROM gps WHERE time > ? ORDER BY time ASC");
+    $kysely->execute(array($time));
+    
+    $geometry = array();
+    $timestamp = 0;
+    while($rivi = $kysely->fetch()){
+        // TODO: Remove debug break and implement path splitting
+        if($rivi[stop] == 1)       
+            break;
+       $geometry[] = array($rivi[long], $rivi[lat]);
+       $timestamp = $rivi[time];
+    }
+
+    // Route feature
+    $feature = array(
+        "type" => "Feature",
+        "geometry" => array(
+            "type" => "LineString",
+            "coordinates" => $geometry),
+        "properties" => array(
+            "time" =>  $timestamp
+        )
+    );
+
+    $output = array(
+        "type" => "FeatureCollection",
+        "features" => array($feature)
     );
 
     echo json_encode($output);
