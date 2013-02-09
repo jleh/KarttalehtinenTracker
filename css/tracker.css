@@ -1,0 +1,22 @@
+/* 
+    Document   : tracker
+    Created on : Feb 7, 2013, 8:48:38 PM
+    Author     : jleh
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+    display: block;
+}
+
+body {
+    font-family: Arial;
+}
+
+#map { 
+    height: 500px; 
+    width: 90%;
+    margin-left: 10px;
+    border: 1px solid;
+}

@@ -1,0 +1,30 @@
+/* 
+    Document   : trackerOl
+    Created on : Feb 9, 2013, 12:22:33 PM
+    Author     : jleh
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+  display: block;
+}
+
+body {
+  font-family: Arial;
+}
+
+#map {
+  height: 600px;
+  width: 1000px;
+}
+
+.olControlAttribution {
+  bottom: 5px;
+  position: relative;
+}
+
+.linksArea {
+  position: relative;
+  padding: 2em;
+}
