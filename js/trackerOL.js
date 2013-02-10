@@ -115,6 +115,11 @@ var tracker = function(){
   // Get new track points after alredy loaded
   function getNewRoute(){
     $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPoint.time, function(data){
+      if(data.features[0].geometry.coordinates.length < 3){
+        console.log("No new track points");
+        return;
+      }
+      
       var geometry = format.parseGeometry(data.features[0].geometry);
       
       geometry.transform(projection, map.getProjectionObject());
@@ -139,7 +144,7 @@ var tracker = function(){
   }
   
   function centerToCurrentLocation(){
-    
+    map.panTo(lastPoint.marker.latlon);
   }
   
   return {

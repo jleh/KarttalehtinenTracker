@@ -14,9 +14,16 @@ body {
   font-family: Arial;
 }
 
+a {
+  color: navy;
+  text-decoration: none;
+}
+
 #map {
+  position: relative;
   height: 600px;
-  width: 1000px;
+  width: 96%;
+  left: 2%;
 }
 
 .olControlAttribution {
@@ -27,4 +34,9 @@ body {
 .linksArea {
   position: relative;
   padding: 2em;
+}
+
+#schedule .day {
+  display: inline-block;
+  margin-left: 3em;
 }
