@@ -1,29 +1,34 @@
 <?php
-// Returns points in GeoJSON format
+// GeoJSON server
 header("Content-type: application/json");
+
+// Debug parameter
+// TODO: Implement event id handling
+$event = 1;
 
 $featureType = $_GET['featureType'];
 
 if($featureType == 'route'){
-    printRoute();
+    printRoute($event);
 }
 else if($featureType == 'currentLocation'){
-    printCurrentLocation();
+    printCurrentLocation($event);
 }
 else if($featureType == 'routeAfterTime'){
-    printRouteAfter($_GET['timestamp']);
+    printRouteAfter($_GET['timestamp'], $event);
 }
 
-function printRoute(){
+function printRoute($event){
     include('yhteys.php');
-    $kysely = $yhteys->prepare("SELECT * FROM gps ORDER BY time ASC");
-    $kysely->execute();
+    $kysely = $yhteys->prepare("SELECT * FROM gps WHERE event = ? ORDER BY time ASC");
+    $kysely->execute(array($event));
 
     $geometry = array();
     while($rivi = $kysely->fetch()){
-        // TODO: Remove debug break and implement path splitting
-        if($rivi[stop] == 1)       
-            break;
+        // Debug route splitting
+        //if($rivi[stop] == 1)       
+        //    break;
+        // TODO: Implement route splitting with stop points
        $geometry[] = array($rivi[long], $rivi[lat]);
     }
 
@@ -44,10 +49,10 @@ function printRoute(){
 }
 
 // TODO: Implement real query
-function printCurrentLocation(){
+function printCurrentLocation($event){
     include('yhteys.php');
-    $kysely = $yhteys->prepare("SELECT * FROM gps ORDER BY time ASC");
-    $kysely->execute();
+    $kysely = $yhteys->prepare("SELECT * FROM gps WHERE event = ? ORDER BY time ASC");
+    $kysely->execute(array($event));
 
     $points = array();
     $pointCoords = array(0, 0); // Point of current location
@@ -85,19 +90,22 @@ function printCurrentLocation(){
 }
 
 // Gets route after timestamp
-function printRouteAfter($time){
+function printRouteAfter($time, $event){
     include('yhteys.php');
-    $kysely = $yhteys->prepare("SELECT * FROM gps WHERE time > ? ORDER BY time ASC");
-    $kysely->execute(array($time));
+    $kysely = $yhteys->prepare("SELECT * FROM gps WHERE time >= ? AND event = ? ORDER BY time ASC");
+    $kysely->execute(array($time, $event));
     
     $geometry = array();
     $timestamp = 0;
+    $lastPoint; // Store last point of route for current location
     while($rivi = $kysely->fetch()){
-        // TODO: Remove debug break and implement path splitting
-        if($rivi[stop] == 1)       
-            break;
+        // Debug route splitting
+        //if($rivi[stop] == 1)       
+        //    break;
        $geometry[] = array($rivi[long], $rivi[lat]);
        $timestamp = $rivi[time];
+       $lastPoint[0] = $rivi[long];
+       $lastPoint[1] = $rivi[lat];
     }
 
     // Route feature
@@ -110,10 +118,20 @@ function printRouteAfter($time){
             "time" =>  $timestamp
         )
     );
+    
+    // Last point feature
+    $point = array(
+        "type" => "Feature",
+        "geometry" => array(
+            "type" => "Point",
+            "coordinates" => $lastPoint
+        ),
+        "properties" => array("time" => $timestamp)
+    );
 
     $output = array(
         "type" => "FeatureCollection",
-        "features" => array($feature)
+        "features" => array($feature, $point)
     );
 
     echo json_encode($output);

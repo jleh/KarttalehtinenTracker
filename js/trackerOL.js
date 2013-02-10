@@ -20,7 +20,10 @@ var tracker = function(){
   var format = new OpenLayers.Format.GeoJSON();
   var projection = new OpenLayers.Projection("EPSG:4326");
   
-  var lastPointTime = 0;
+  var lastPoint = {
+    time: 0,
+    marker: undefined
+  };
   
   function initialize(){
     map = new OpenLayers.Map('map');
@@ -31,12 +34,10 @@ var tracker = function(){
     getAllPoints();
     addLastPoint();
     
-    map.setCenter(new OpenLayers.LonLat(23.177327, 61.666618).transform(
-        projection,
-        map.getProjectionObject()), 16
-    );
-      
-    selectControl = new OpenLayers.Control.SelectFeature()
+ //   map.setCenter(new OpenLayers.LonLat(23.177327, 61.666618).transform(
+ //       projection,
+ //     map.getProjectionObject()), 16
+ //   );
   }
   
   function addPeruskarttaLayer(){
@@ -76,15 +77,17 @@ var tracker = function(){
         OpenLayers.Event.stop(evt);
       });
       
-      lastPointTime = data.features[0].properties.time;
+      lastPoint.time = data.features[0].properties.time;
+      lastPoint.marker = marker;
       
+      map.setCenter(marker.lonlat ,16);
       markerLayer.addMarker(marker);
     });
   }
   
   function onMarkerSelect(marker){
     var text = "Nykyinen sijainti klo: ";
-    var time = new Date(lastPointTime*1000);
+    var time = new Date(lastPoint.time*1000);
     text += ((time.getHours() + 2) < 10 ? "0" + (time.getHours() + 2) : (time.getHours() + 2));
     text += ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
     
@@ -106,13 +109,32 @@ var tracker = function(){
   
   // Get new track points after alredy loaded
   function getNewRoute(){
-    $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPointTime, function(data){
+    $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPoint.time, function(data){
       var geometry = format.parseGeometry(data.features[0].geometry);
       
       geometry.transform(projection, map.getProjectionObject());
       var feature = new OpenLayers.Feature.Vector(geometry);
       geoJSONlayer.addFeatures(feature);
-    })
+      
+      updateLastPoint(data.features[1]);
+    });
+  }
+  
+  function updateLastPoint(feature){
+    if(feature.geometry.coordinates == undefined){
+      return;
+    }
+    
+    var coords = feature.geometry.coordinates;
+    var px = map.getPixelFromLonLat(new OpenLayers.LonLat(coords[0], coords[1]).transform(
+            projection, map.getProjectionObject()));
+
+    lastPoint.marker.moveTo(px);
+    lastPoint.time = feature.properties.time;
+  }
+  
+  function centerToCurrentLocation(){
+    
   }
   
   return {
@@ -120,6 +142,7 @@ var tracker = function(){
     addPeruskarttaLayer: addPeruskarttaLayer,
     addOSMLayer: addOSMLayer,
     getAllPoints: getAllPoints,
-    updateRoute: updateRoute
-  }
+    updateRoute: updateRoute,
+    centerToCurrentLocation: centerToCurrentLocation
+  };
 }();

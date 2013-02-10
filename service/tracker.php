@@ -21,8 +21,8 @@ if($_GET['act'] == "s"){
             $query = $yhteys->prepare("SELECT COUNT(*) FROM gps WHERE time = ?");
             $query->execute(array($row[0]));
             $result = $query->fetch();	
-            if($result[0] == 0) {
-                    $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, 0, 0)");
+            if($result[0] == 0) { // TODO: Get eventId from URL
+                    $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, 0, 0, 2)");
                     $query->execute(array($row[0], $row[1], $row[2]));
             }
     }
@@ -37,7 +37,7 @@ if($_GET['act'] == "s"){
     $result = $query->fetch();
 
     if($result[0] == 0){
-            $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, ?, 0)");
+            $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, ?, 0, 2)");
             $query->execute($firstRow);
     }
 
