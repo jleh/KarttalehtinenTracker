@@ -4,7 +4,7 @@ header("Content-type: application/json");
 
 // Debug parameter
 // TODO: Implement event id handling
-$event = 1;
+$event = 2;
 
 $featureType = $_GET['featureType'];
 

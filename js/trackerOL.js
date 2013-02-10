@@ -20,6 +20,8 @@ var tracker = function(){
   var format = new OpenLayers.Format.GeoJSON();
   var projection = new OpenLayers.Projection("EPSG:4326");
   
+  var updateInterval;
+  
   var lastPoint = {
     time: 0,
     marker: undefined
@@ -38,6 +40,8 @@ var tracker = function(){
  //       projection,
  //     map.getProjectionObject()), 16
  //   );
+ 
+    updateInterval = setInterval(function() {updateRoute();}, 10000);
   }
   
   function addPeruskarttaLayer(){
@@ -104,6 +108,7 @@ var tracker = function(){
   
   // Update route on map
   function updateRoute(){
+    console.log("Getting new track points");
     getNewRoute();
   }
   
