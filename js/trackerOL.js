@@ -27,6 +27,8 @@ var tracker = function(){
     marker: undefined
   };
   
+  var lastImageTime = 0;
+  
   function initialize(){
     map = new OpenLayers.Map('map');
     map.addControl(new OpenLayers.Control.LayerSwitcher());
@@ -147,12 +149,40 @@ var tracker = function(){
     map.panTo(lastPoint.marker.latlon);
   }
   
+  
+  function getImages(){
+    var size = new OpenLayers.Size(23,18);
+    var offset = new OpenLayers.Pixel(0,0);
+    
+    $.getJSON("service/image.php?mode=get", function(data){
+      for(var i = 0; i < data.length; i++){
+        var coords = new OpenLayers.LonLat(data[i].lon, data[i].lat).transform(projection, map.getProjectionObject());
+        var marker = new OpenLayers.Marker(coords, new OpenLayers.Icon('img/photo.png', size, offset));
+        marker.imageURL = data[i].image;
+        marker.imageComment = data[i].comment;
+        marker.events.register('mousedown', marker, function(evt){
+          var text = '<img class="popupImg" src="' + this.imageURL + '"><br>' + this.imageComment;
+          
+          var popup = new OpenLayers.Popup.FramedCloud("popup",
+          this.lonlat, null, text, null, true);
+          map.addPopup(popup);
+          
+          OpenLayers.Event.stop(evt);
+        });
+        
+        markerLayer.addMarker(marker);
+        lastImageTime = data[i].time;
+      }
+    });
+  }
+  
   return {
     initialize: initialize,
     addPeruskarttaLayer: addPeruskarttaLayer,
     addOSMLayer: addOSMLayer,
     getAllPoints: getAllPoints,
     updateRoute: updateRoute,
-    centerToCurrentLocation: centerToCurrentLocation
+    centerToCurrentLocation: centerToCurrentLocation,
+    getImages: getImages
   };
 }();

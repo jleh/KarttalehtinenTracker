@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Upload foto</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <script type="text/javascript">
+      function init(){
+        navigator.geolocation.getCurrentPosition(function(position){
+          document.getElementById("lat").value = position.coords.latitude;
+          document.getElementById("lon").value = position.coords.longitude;
+        });
+      }
+    </script>
+  </head>
+  <body onload="init();">
+    <form action="service/image.php?mode=save" method="post" name="form" enctype="multipart/form-data">
+      <label>File: </label> <input type="file" name="image"><br>
+      Lat: <input type="text" name="lat" id="lat"><br>
+      Lon: <input type="text" name="lon" id="lon"><br>
+      <label>Comments: </label><input type="text" id="comment" name="comment"><br>
+      <input type="submit" value="Upload image">
+    </form>
+  </body>
+</html>
