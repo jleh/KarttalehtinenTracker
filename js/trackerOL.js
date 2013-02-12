@@ -13,7 +13,7 @@ var tracker = function(){
   
   var routeStyle = new OpenLayers.Style({
     strokeWidth: 7,
-    strokeColor: "#93C740",
+    strokeColor: "#DE6514",
     strokeOpacity: 0.7
   });
   
@@ -99,7 +99,7 @@ var tracker = function(){
   }
   
   function onMarkerSelect(marker){
-    var text = "Nykyinen sijainti klo: ";
+    var text = "Viimeisin sijaintitieto klo: ";
     var time = new Date(lastPoint.time*1000);
     text += ((time.getHours() + 2) < 10 ? "0" + (time.getHours() + 2) : (time.getHours() + 2));
     text += ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
