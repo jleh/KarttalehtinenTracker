@@ -64,4 +64,20 @@ else if($_REQUEST['mode'] == 'get'){
     
     echo json_encode($images);
 }
+else if($_REQUEST['mode'] == 'getNew'){
+    $time = $_REQUEST['time'];
+    $query = $yhteys->prepare('SELECT * FROM gps_images WHERE time > FROM_UNIXTIME(?)');
+    $query->execute(array($time));
+    
+    $images = array();
+    while($row = $query->fetch()){
+        $images[] = array("image" => $row['image_path'],
+                          "lat" => $row['lat'],
+                          "lon" => $row['lon'],
+                          "comment" => $row['comment'],
+                          "time" => strtotime($row['time']));
+    }
+    
+    echo json_encode($images);
+}
 ?>

@@ -21,6 +21,8 @@ var tracker = function(){
   var projection = new OpenLayers.Projection("EPSG:4326");
   
   var updateInterval;
+  var imageUpdater;
+  var drawerInterval;
   
   var lastPoint = {
     time: 0,
@@ -28,6 +30,8 @@ var tracker = function(){
   };
   
   var lastImageTime = 0;
+  
+  var pointQueue = [];
   
   function initialize(){
     map = new OpenLayers.Map('map');
@@ -37,6 +41,7 @@ var tracker = function(){
     addOSMLayer();
     getAllPoints();
     addLastPoint();
+    getImages();
     
  //   map.setCenter(new OpenLayers.LonLat(23.177327, 61.666618).transform(
  //       projection,
@@ -44,6 +49,8 @@ var tracker = function(){
  //   );
  
     updateInterval = setInterval(function() {updateRoute();}, 10000);
+    imageUpdater = setInterval(getNewImages, 10000);
+    drawerInterval = setInterval(drawNewRoute, 3000);
   }
   
   function addPeruskarttaLayer(){
@@ -110,7 +117,6 @@ var tracker = function(){
   
   // Update route on map
   function updateRoute(){
-    console.log("Getting new track points");
     getNewRoute();
   }
   
@@ -118,17 +124,15 @@ var tracker = function(){
   function getNewRoute(){
     $.getJSON("service/geoJSON.php?featureType=routeAfterTime&timestamp=" + lastPoint.time, function(data){
       if(data.features[0].geometry.coordinates.length < 3){
-        console.log("No new track points");
         return;
       }
       
-      var geometry = format.parseGeometry(data.features[0].geometry);
+      var coords = data.features[0].geometry.coordinates;
+      for(var i = 0; i < coords.length; i++){
+        pointQueue.push(coords[i]);
+      }
       
-      geometry.transform(projection, map.getProjectionObject());
-      var feature = new OpenLayers.Feature.Vector(geometry);
-      geoJSONlayer.addFeatures(feature);
-      
-      updateLastPoint(data.features[1]);
+      lastPoint.time = data.features[0].properties.time;
     });
   }
   
@@ -145,17 +149,42 @@ var tracker = function(){
     lastPoint.time = feature.properties.time;
   }
   
+  // Add points to route from queue
+  function drawNewRoute(){
+    if(pointQueue.length == 0){
+      return;
+    }
+    
+    var geometry = geoJSONlayer.features[0].geometry;
+    var nextPoint = pointQueue.shift();
+
+    geometry.addPoint(new OpenLayers.Geometry.Point(nextPoint[0], nextPoint[1]).transform(
+            projection, map.getProjectionObject()));
+    geoJSONlayer.redraw();
+    
+    var px = map.getLayerPxFromViewPortPx(map.getPixelFromLonLat(new OpenLayers.LonLat(nextPoint[0], nextPoint[1]).transform(
+            projection, map.getProjectionObject())));
+    lastPoint.marker.moveTo(px);
+  }
+  
   function centerToCurrentLocation(){
     map.panTo(lastPoint.marker.latlon);
   }
   
   
   function getImages(){
+    $.getJSON("service/image.php?mode=get", addImagesToMap);
+  }
+  
+  function getNewImages(){
+    $.getJSON("service/image.php?mode=getNew&time=" + lastImageTime, addImagesToMap);
+  }
+  
+  function addImagesToMap(data){
     var size = new OpenLayers.Size(23,18);
     var offset = new OpenLayers.Pixel(0,0);
     
-    $.getJSON("service/image.php?mode=get", function(data){
-      for(var i = 0; i < data.length; i++){
+    for(var i = 0; i < data.length; i++){
         var coords = new OpenLayers.LonLat(data[i].lon, data[i].lat).transform(projection, map.getProjectionObject());
         var marker = new OpenLayers.Marker(coords, new OpenLayers.Icon('img/photo.png', size, offset));
         marker.imageURL = data[i].image;
@@ -172,8 +201,7 @@ var tracker = function(){
         
         markerLayer.addMarker(marker);
         lastImageTime = data[i].time;
-      }
-    });
+    }
   }
   
   return {
@@ -183,6 +211,7 @@ var tracker = function(){
     getAllPoints: getAllPoints,
     updateRoute: updateRoute,
     centerToCurrentLocation: centerToCurrentLocation,
-    getImages: getImages
+    getImages: getImages,
+    drawNewRoute: drawNewRoute
   };
 }();
