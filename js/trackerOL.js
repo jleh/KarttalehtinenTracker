@@ -117,7 +117,8 @@ var tracker = function(){
   
   // Update route on map
   function updateRoute(){
-    getNewRoute();
+    if(pointQueue.length < 10)
+      getNewRoute();
   }
   
   // Get new track points after alredy loaded
