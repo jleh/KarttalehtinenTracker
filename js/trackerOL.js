@@ -93,7 +93,15 @@ var tracker = function(){
       lastPoint.time = data.features[0].properties.time;
       lastPoint.marker = marker;
       
-      map.setCenter(marker.lonlat ,16);
+      // Default location in Finland
+      if(coord[0] === 0 && coord[1] === 0){
+        map.setCenter(new OpenLayers.LonLat(24.933064, 60.168617).transform(
+        projection, map.getProjectionObject()) ,16);
+      }
+      else {
+        map.setCenter(marker.lonlat ,16);
+      }
+      
       markerLayer.addMarker(marker);
     });
   }
@@ -184,6 +192,9 @@ var tracker = function(){
   function addImagesToMap(data){
     var size = new OpenLayers.Size(23,18);
     var offset = new OpenLayers.Pixel(0,0);
+    
+    if(data == null)
+      return;
     
     for(var i = 0; i < data.length; i++){
         var coords = new OpenLayers.LonLat(data[i].lon, data[i].lat).transform(projection, map.getProjectionObject());
