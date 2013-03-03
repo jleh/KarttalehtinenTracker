@@ -20,7 +20,7 @@ class PointsController extends AppController {
         }
     }
     
-    public function json(){
+    public function route(){
         $points = $this->Point->find('all');
         $coords;
         
@@ -29,6 +29,11 @@ class PointsController extends AppController {
                               (float) $point['Point']['lng']);
         }
         $this->set('message', $coords);
+        $this->render('json');
+    }
+    
+    public function dummy() {
+        $this->set('message', array());
         $this->render('json');
     }
 }

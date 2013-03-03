@@ -1,0 +1,46 @@
+/* 
+    Document   : trackerOl
+    Created on : Feb 9, 2013, 12:22:33 PM
+    Author     : jleh
+    Description:
+        Purpose of the stylesheet follows.
+*/
+
+root { 
+  display: block;
+}
+
+body {
+  font-family: Arial;
+}
+
+a {
+  color: navy;
+  text-decoration: none;
+}
+
+#map {
+  position: relative;
+  height: 300px;
+  width: 96%;
+  left: 2%;
+}
+
+.olControlAttribution {
+  bottom: 5px;
+  position: relative;
+}
+
+.linksArea {
+  position: relative;
+  padding: 2em;
+}
+
+#schedule .day {
+  display: inline-block;
+  margin-left: 3em;
+}
+
+.popupImg {
+  height: 400px;
+}
