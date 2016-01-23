@@ -1,22 +1,18 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Karttalehtinen tracker</title>
+    <title>Ilveshiihto 2016</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
     <link rel="stylesheet" href="css/trackerOL.css" />
     <link rel="stylesheet" href="css/openlayers.css" />
-    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
-    <script src="http://openlayers.org/api/OpenLayers.js"></script>
-    <script src="js/trackerOL.js"></script>
-    <script src="js/MML.js"></script>
+    <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
   </head>
   <body>
-    <h1>Ilveshiihto 2013</h1>
+    <h1>Ilveshiihto 2016</h1>
     <div id="map"></div>
     
     <section class="linksArea">
-      <a href="service/gpx.php">Lataa</a> reitti GPX tiedostona.
       
       <div id="schedule">
         <h2>Aikataulu</h2>
@@ -42,5 +38,12 @@
         </div>
       </div>
     </section>
+
+    <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
+    <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
+    <script src="js/proj4.js"></script>
+    <script src="js/proj4leaflet.js"></script>
+    <script src="js/MML.js"></script>
+    <script src="js/tracker16.js"></script>
   </body>
 </html>
