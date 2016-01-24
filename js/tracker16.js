@@ -148,13 +148,22 @@ var tracker = function() {
     }
   }
   
+  function getTwitter() {
+    var url = "https://pacific-falls-72628.herokuapp.com/";
+
+    $.getJSON(url, function (data) {
+      console.log(data);
+    });
+  }
+
   return {
     initialize: initialize,
     getAllPoints: getAllPoints,
     updateRoute: updateRoute,
     centerToCurrentLocation: centerToCurrentLocation,
     getImages: getImages,
-    drawNewRoute: drawNewRoute
+    drawNewRoute: drawNewRoute,
+    getTwitter: getTwitter
   };
 
 }();
