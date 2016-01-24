@@ -21,6 +21,12 @@ html, body {
   height: 400px;
 }
 
+.img-close-big {
+  position: absolute;
+  right: 13px;
+  font-size: 40px;
+}
+
 @media(max-width: 768px) {
 
   #map {

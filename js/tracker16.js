@@ -142,7 +142,12 @@ var tracker = function() {
     for (var i = 0; i < data.length; i++) {
       var marker = L.marker([data[i].lat, data[i].lon], { icon: icon }).addTo(map);
 
-      marker.bindPopup('<img class="popupImg" src="' + API_SERVER + data[i].image + '"><br>' + data[i].comment);
+      marker.imageURL = API_SERVER + data[i].image;
+      marker.on('click', function (e) {
+        $("#photo-modal").find("img").attr("src", e.target.imageURL);
+        $("#photo-modal").modal("show");
+      });
+      //marker.bindPopup('<img class="popupImg" src="' + API_SERVER + data[i].image + '"><br>' + data[i].comment);
 
       lastImageTime = data[i].time;
     }
