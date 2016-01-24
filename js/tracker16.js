@@ -3,6 +3,8 @@ $(document).ready(function(){
 });
 
 var API_SERVER = "http://karttalehtinen.fi/tracker2013/";
+//var API_SERVER = "http://karttalehtinen.fi/ilveshiihto16/";
+//var API_SERVER = "";
 
 var tracker = function() {
   "use strict";
@@ -41,7 +43,15 @@ var tracker = function() {
 
   function getAllPoints() {
     $.getJSON(API_SERVER + "service/geoJSON.php?featureType=route", function (route) {
-        geoJSONlayer = L.geoJson(route).addTo(map);
+        geoJSONlayer = L.geoJson(route, {
+          style: function (feature) {
+            return {
+              color: "#A600FF",
+              opacity: 0.75,
+              weight: 8
+            }
+          }
+        }).addTo(map);
     });
   }
 
@@ -50,8 +60,13 @@ var tracker = function() {
       var coord = data.features[0].geometry.coordinates;
       var text = "Viimeisin sijaintitieto klo: ";
       var time = new Date(lastPoint.time*1000);
+      var icon = L.AwesomeMarkers.icon({
+        prefix: "fa",
+        icon: "circle",
+        markerColor: "red"
+      });
 
-      lastPointMarker = L.marker([coord[1], coord[0]]).addTo(map);
+      lastPointMarker = L.marker([coord[1], coord[0]], { icon: icon }).addTo(map);
       
       text += ((time.getHours() + 2) < 10 ? "0" + (time.getHours() + 2) : (time.getHours() + 2));
       text += ":" + (time.getMinutes() < 10 ? "0" + time.getMinutes() : time.getMinutes());
@@ -118,12 +133,14 @@ var tracker = function() {
   }
   
   function addImagesToMap(data) {
-    var icon = L.icon({
-      iconUrl: "img/photo.png"
+    var icon = L.AwesomeMarkers.icon({
+      icon: "camera",
+      prefix: "fa",
+      markerColor: "cadetblue"
     });
 
     for (var i = 0; i < data.length; i++) {
-      var marker = L.marker([data[i].lat, data[i].lon]).addTo(map);
+      var marker = L.marker([data[i].lat, data[i].lon], { icon: icon }).addTo(map);
 
       marker.bindPopup('<img class="popupImg" src="' + API_SERVER + data[i].image + '"><br>' + data[i].comment);
 

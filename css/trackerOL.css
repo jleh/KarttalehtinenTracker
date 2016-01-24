@@ -1,34 +1,10 @@
-/* 
-    Document   : trackerOl
-    Created on : Feb 9, 2013, 12:22:33 PM
-    Author     : jleh
-    Description:
-        Purpose of the stylesheet follows.
-*/
-
-root { 
-  display: block;
+html, body {
+  height: 100%;
 }
 
-body {
-  font-family: Arial;
-}
-
-a {
-  color: navy;
-  text-decoration: none;
-}
-
-#map {
-  position: relative;
-  height: 600px;
-  width: 96%;
-  left: 2%;
-}
-
-.olControlAttribution {
-  bottom: 5px;
-  position: relative;
+.container,
+.container-fluid {
+  height: 100%;
 }
 
 .linksArea {
@@ -43,4 +19,24 @@ a {
 
 .popupImg {
   height: 400px;
+}
+
+@media(max-width: 768px) {
+
+  #map {
+    height: 100%;
+    width: 100%
+  }
+
+}
+
+@media(min-width: 769px) {
+  
+  #map {
+    position: relative;
+    height: 600px;
+    width: 96%;
+    left: 2%;
+  }
+
 }

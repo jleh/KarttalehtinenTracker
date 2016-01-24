@@ -4,46 +4,54 @@
     <title>Ilveshiihto 2016</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
     <link rel="stylesheet" href="css/trackerOL.css" />
-    <link rel="stylesheet" href="css/openlayers.css" />
     <link rel="stylesheet" href="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.css" />
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <link rel="stylesheet" type="text/css" href="leaflet.awesome-markers.css">
   </head>
   <body>
-    <h1>Ilveshiihto 2016</h1>
-    <div id="map"></div>
-    
-    <section class="linksArea">
+  
+    <div class="container-fluid">
+      <h1 class="hidden-xs">Ilveshiihto 2016</h1>
+      <div id="map"></div>
       
-      <div id="schedule">
-        <h2>Aikataulu</h2>
-        <div class="day">
-          <h3>Pe 15.2.</h3>
-          Klo 07.00 Lähtö Ruovedeltä<br>
-          Klo 12.30 Lounas Mänttä-Vilppulassa<br>
-          Klo 17.30 Saapuminen Juupajoelle
-        </div>
+      <div class="linksArea hidden-xs">
         
-        <div class="day">
-          <h3>La 16.2.</h3>
-          Klo 07.00 Lähtö Juupajoelta<br>
-          Klo 11.30 Lounas Kuhmoisissa<br>
-          Klo 17.30 Saapuminen Padasjoelle
-        </div>
-        
-        <div class="day">
-          <h3>Su 17.2.</h3>
-          Klo 07.00 Lähtö Padasjoelta<br>
-          Klo 12.30 Lounas Asikkalassa<br>
-          Klo 17.00 Saapuminen Lahteen
+        <div id="schedule">
+          <h2>Aikataulu</h2>
+          <div class="day">
+            <h3>Pe 15.2.</h3>
+            Klo 07.00 Lähtö Ruovedeltä<br>
+            Klo 12.30 Lounas Mänttä-Vilppulassa<br>
+            Klo 17.30 Saapuminen Juupajoelle
+          </div>
+          
+          <div class="day">
+            <h3>La 16.2.</h3>
+            Klo 07.00 Lähtö Juupajoelta<br>
+            Klo 11.30 Lounas Kuhmoisissa<br>
+            Klo 17.30 Saapuminen Padasjoelle
+          </div>
+          
+          <div class="day">
+            <h3>Su 17.2.</h3>
+            Klo 07.00 Lähtö Padasjoelta<br>
+            Klo 12.30 Lounas Asikkalassa<br>
+            Klo 17.00 Saapuminen Lahteen
+          </div>
         </div>
       </div>
-    </section>
+    </div>
 
     <script src="http://code.jquery.com/jquery-1.9.1.min.js"></script>
     <script src="http://cdn.leafletjs.com/leaflet/v0.7.7/leaflet.js"></script>
     <script src="js/proj4.js"></script>
     <script src="js/proj4leaflet.js"></script>
     <script src="js/MML.js"></script>
+    <script src="js/leaflet.awesome-markers.min.js"></script>
     <script src="js/tracker16.js"></script>
   </body>
 </html>
