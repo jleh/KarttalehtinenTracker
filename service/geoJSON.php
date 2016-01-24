@@ -1,10 +1,13 @@
 <?php
 // GeoJSON server
+
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type");
 header("Content-type: application/json");
 
 // Debug parameter
 // TODO: Implement event id handling
-$event = 2;
+$event = 5;
 
 $featureType = $_GET['featureType'];
 

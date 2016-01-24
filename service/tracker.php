@@ -1,5 +1,8 @@
 <?php
 // Saves points from mobile GPS eg. from RGTracker
+
+$event = 5;
+
 if($_GET['act'] == "s"){
     include("yhteys.php");
     $data = $_GET['d'];
@@ -22,8 +25,8 @@ if($_GET['act'] == "s"){
             $query->execute(array($row[0]));
             $result = $query->fetch();	
             if($result[0] == 0) { // TODO: Get eventId from URL
-                    $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, 0, 0, 2)");
-                    $query->execute(array($row[0], $row[1], $row[2]));
+                    $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, 0, 0, ?)");
+                    $query->execute(array($row[0], $row[1], $row[2], $event));
             }
     }
 
@@ -31,13 +34,14 @@ if($_GET['act'] == "s"){
     //Convert coordinates
     $firstRow[1] = substr($firstRow[1], 0, 2).".".substr($firstRow[1], 2);
     $firstRow[2] = substr($firstRow[2], 0, 2).".".substr($firstRow[2], 2);
+    $firstRow[4] = $event;
 
     $query = $yhteys->prepare("SELECT COUNT(*) FROM gps WHERE time = ?");
     $query->execute(array($firstRow[0]));
     $result = $query->fetch();
 
     if($result[0] == 0){
-            $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, ?, 0, 2)");
+            $query = $yhteys->prepare("INSERT INTO gps VALUES(?, ?, ?, ?, 0, ?)");
             $query->execute($firstRow);
     }
 

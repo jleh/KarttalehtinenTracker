@@ -1,6 +1,10 @@
 <?php
 // Saves uploaded image and add information to DB
 
+header('Access-Control-Allow-Origin: *');
+header("Access-Control-Allow-Headers: X-Requested-With, Content-Type");
+header("Content-type: application/json");
+
 include('yhteys.php');
 
 if($_REQUEST['mode'] == 'save'){
