@@ -7,14 +7,8 @@ html, body {
   height: 100%;
 }
 
-.linksArea {
-  position: relative;
-  padding: 2em;
-}
-
-#schedule .day {
-  display: inline-block;
-  margin-left: 3em;
+#info-area {
+  margin-bottom: 2em;
 }
 
 .popupImg {
