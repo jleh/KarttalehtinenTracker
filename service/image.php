@@ -7,6 +7,8 @@ header("Content-type: application/json");
 
 include('yhteys.php');
 
+$eventId = 5;
+
 if($_REQUEST['mode'] == 'save'){
     $allowedExts = array("jpg", "jpeg", "gif", "png");
     $extension = end(explode(".", $_FILES["image"]["name"]));
@@ -14,7 +16,7 @@ if($_REQUEST['mode'] == 'save'){
     || ($_FILES["image"]["type"] == "image/jpeg")
     || ($_FILES["image"]["type"] == "image/png")
     || ($_FILES["image"]["type"] == "image/pjpeg"))
-    && ($_FILES["image"]["size"] < 1000000)
+    && ($_FILES["image"]["size"] < 10000000)
     && in_array($extension, $allowedExts)) {
 
         if($_FILES["image"]["error"] > 0){
@@ -36,26 +38,32 @@ if($_REQUEST['mode'] == 'save'){
                     return;
                 }
 
-                $lat = $_REQUEST["lat"];
-                $lon = $_REQUEST["lon"];
+                $exif = exif_read_data($image_path);
+
+                $lon = getGps($exif["GPSLongitude"], $exif['GPSLongitudeRef']);
+                $lat = getGps($exif["GPSLatitude"], $exif['GPSLatitudeRef']);
+
+                if ($lat == 0 || $lon == 0)
+                    die("Coordinates not found");
+
                 $comment = $_REQUEST["comment"];
                 $image = 'images/'.$_FILES["image"]["name"];
 
-                $query = $yhteys->prepare("INSERT INTO gps_images (image_path, lat, lon, comment) VALUES (?, ?, ?, ?)");
-                $query->execute(array($image, $lat, $lon, $comment));
+                $query = $yhteys->prepare("INSERT INTO gps_images (image_path, lat, lon, comment, event) VALUES (?, ?, ?, ?, ?)");
+                $query->execute(array($image, $lat, $lon, $comment, $eventId));
 
-                echo $lat . " " . $lon . '<br>';
+                echo "\n Coordinates: " . $lat . " " . $lon . '<br>';
 
                 echo "Image saved";
             }
         }
     } else {
-        echo "File not saved.";
+        echo "File not saved. " . $_FILES["image"]["size"];
     }
 }
 else if($_REQUEST['mode'] == 'get'){
-    $query = $yhteys->prepare('SELECT * FROM gps_images');
-    $query->execute();
+    $query = $yhteys->prepare('SELECT * FROM gps_images WHERE event = ?');
+    $query->execute(array($eventId));
     
     $images;
     while($row = $query->fetch()){
@@ -70,8 +78,8 @@ else if($_REQUEST['mode'] == 'get'){
 }
 else if($_REQUEST['mode'] == 'getNew'){
     $time = $_REQUEST['time'];
-    $query = $yhteys->prepare('SELECT * FROM gps_images WHERE time > FROM_UNIXTIME(?)');
-    $query->execute(array($time));
+    $query = $yhteys->prepare('SELECT * FROM gps_images WHERE time > FROM_UNIXTIME(?) AND event = ?');
+    $query->execute(array($time, $eventId));
     
     $images = array();
     while($row = $query->fetch()){
@@ -84,4 +92,31 @@ else if($_REQUEST['mode'] == 'getNew'){
     
     echo json_encode($images);
 }
+
+function getGps($exifCoord, $hemi) {
+
+    $degrees = count($exifCoord) > 0 ? gps2Num($exifCoord[0]) : 0;
+    $minutes = count($exifCoord) > 1 ? gps2Num($exifCoord[1]) : 0;
+    $seconds = count($exifCoord) > 2 ? gps2Num($exifCoord[2]) : 0;
+
+    $flip = ($hemi == 'W' or $hemi == 'S') ? -1 : 1;
+
+    return $flip * ($degrees + $minutes / 60 + $seconds / 3600);
+
+}
+
+function gps2Num($coordPart) {
+
+    $parts = explode('/', $coordPart);
+
+    if (count($parts) <= 0)
+        return 0;
+
+    if (count($parts) == 1)
+        return $parts[0];
+
+    return floatval($parts[0]) / floatval($parts[1]);
+}
+
+
 ?>
