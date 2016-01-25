@@ -1,3 +1,5 @@
+/* global $, L */
+
 $(document).ready(function(){
   tracker.initialize();
 });
@@ -11,9 +13,6 @@ var tracker = function() {
 
   var map;
   var geoJSONlayer;
-  var updateInterval;
-  var imageUpdater;
-  var drawerInterval;
   var lastPointMarker;
   
   var lastPoint = {
@@ -26,32 +25,32 @@ var tracker = function() {
   var pointQueue = [];
   
   function initialize() {
-    map = L.map('map', {
-            crs: L.TileLayer.MML.get3067Proj()
-          }).setView([61.5, 25.8], 9);
+    map = L.map("map", {
+      crs: L.TileLayer.MML.get3067Proj()
+    }).setView([61.5, 25.8], 9);
 
-    L.tileLayer.mml_wmts({ layer: "maastokartta" }).addTo(map);
+    L.tileLayer.mml_wmts({ layer: "maastokartta", opacity: 0.75 }).addTo(map);
 
     getAllPoints();
     addLastPoint();
     getImages();
 
-    updateInterval = setInterval(function() {updateRoute();}, 10000);
-    imageUpdater = setInterval(getNewImages, 10000);
-    drawerInterval = setInterval(drawNewRoute, 3000);
+    setInterval(function() {updateRoute();}, 10000);
+    setInterval(getNewImages, 10000);
+    setInterval(drawNewRoute, 3000);
   }
 
   function getAllPoints() {
     $.getJSON(API_SERVER + "service/geoJSON.php?featureType=route", function (route) {
-        geoJSONlayer = L.geoJson(route, {
-          style: function (feature) {
-            return {
-              color: "#A600FF",
-              opacity: 0.75,
-              weight: 8
-            }
-          }
-        }).addTo(map);
+      geoJSONlayer = L.geoJson(route, {
+        style: function () {
+          return {
+            color: "#A600FF",
+            opacity: 0.75,
+            weight: 8
+          };
+        }
+      }).addTo(map);
     });
   }
 
@@ -143,22 +142,14 @@ var tracker = function() {
       var marker = L.marker([data[i].lat, data[i].lon], { icon: icon }).addTo(map);
 
       marker.imageURL = API_SERVER + data[i].image;
-      marker.on('click', function (e) {
+      marker.on("click", function (e) {
         $("#photo-modal").find("img").attr("src", e.target.imageURL);
         $("#photo-modal").modal("show");
       });
-      //marker.bindPopup('<img class="popupImg" src="' + API_SERVER + data[i].image + '"><br>' + data[i].comment);
+      // marker.bindPopup('<img class="popupImg" src="' + API_SERVER + data[i].image + '"><br>' + data[i].comment);
 
       lastImageTime = data[i].time;
     }
-  }
-  
-  function getTwitter() {
-    var url = "https://pacific-falls-72628.herokuapp.com/";
-
-    $.getJSON(url, function (data) {
-      console.log(data);
-    });
   }
 
   return {
@@ -167,8 +158,7 @@ var tracker = function() {
     updateRoute: updateRoute,
     centerToCurrentLocation: centerToCurrentLocation,
     getImages: getImages,
-    drawNewRoute: drawNewRoute,
-    getTwitter: getTwitter
+    drawNewRoute: drawNewRoute
   };
 
 }();
