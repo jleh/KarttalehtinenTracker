@@ -129,11 +129,6 @@ var tracker = function() {
     lastPointMarker.setLatLng(latlng);
   }
   
-  function centerToCurrentLocation(){
-    map.panTo(lastPoint.marker.latlon);
-  }
-  
-  
   function getImages(){
     $.getJSON(API_SERVER + "service/image.php?mode=get", addImagesToMap);
   }
@@ -189,12 +184,7 @@ var tracker = function() {
   }
 
   return {
-    initialize: initialize,
-    getAllPoints: getAllPoints,
-    updateRoute: updateRoute,
-    centerToCurrentLocation: centerToCurrentLocation,
-    getImages: getImages,
-    drawNewRoute: drawNewRoute
+    initialize: initialize
   };
 
 }();
