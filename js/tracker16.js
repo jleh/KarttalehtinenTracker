@@ -14,6 +14,8 @@ var tracker = function() {
   var map;
   var geoJSONlayer;
   var lastPointMarker;
+
+  var placeMarkers = {};
   
   var lastPoint = {
     time: 0,
@@ -29,11 +31,12 @@ var tracker = function() {
       crs: L.TileLayer.MML.get3067Proj()
     }).setView([61.5, 25.8], 9);
 
-    L.tileLayer.mml_wmts({ layer: "maastokartta", opacity: 0.75 }).addTo(map);
+    L.tileLayer.mml_wmts({ layer: "maastokartta", opacity: 0.70 }).addTo(map);
 
     getAllPoints();
     addLastPoint();
     getImages();
+    getPlaceMarkers();
 
     setInterval(function() {updateRoute();}, 10000);
     setInterval(getNewImages, 10000);
@@ -158,6 +161,31 @@ var tracker = function() {
 
       lastImageTime = data[i].time;
     }
+  }
+
+  function getPlaceMarkers() {
+    var url = "https://gist.githubusercontent.com/jleh/11413ddf813601ec81f4/raw/map.geojson";
+    
+    var icons = {
+      "sleep":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "bed" }),
+      "lunch":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "cutlery" })
+    };
+
+    $.getJSON(url, function (places) {
+      L.geoJson(places, {
+        pointToLayer: function (feature, latlng) {
+          var icon = icons[feature.properties.type];
+          var marker = L.marker(latlng, { icon: icon });
+          var text = "<strong>" + feature.properties.name + "</strong><br>" + feature.properties.description;
+
+          placeMarkers[feature.properties.name] = marker;
+
+          marker.bindPopup(text);
+
+          return marker;
+        }
+      }).addTo(map);
+    });
   }
 
   return {
