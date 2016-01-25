@@ -38,6 +38,14 @@ var tracker = function() {
     setInterval(function() {updateRoute();}, 10000);
     setInterval(getNewImages, 10000);
     setInterval(drawNewRoute, 3000);
+
+    $("#description-toggle").click(function () {
+      $("#info-area").removeClass("hidden-xs");
+    });
+
+    $("#description-close").click(function () {
+      $("#info-area").addClass("hidden-xs");
+    });
   }
 
   function getAllPoints() {

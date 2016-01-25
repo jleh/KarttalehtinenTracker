@@ -21,11 +21,26 @@ html, body {
   font-size: 40px;
 }
 
+#description-toggle {
+  position: absolute;
+  right: 5px;
+  z-index: 100;
+  top: 5px;
+}
+
 @media(max-width: 768px) {
 
   #map {
     height: 100%;
     width: 100%
+  }
+
+  #info-area {
+    margin-bottom: 2em;
+    position: absolute;
+    top: 0;
+    background: #fff;
+    z-index: 1000;
   }
 
 }
