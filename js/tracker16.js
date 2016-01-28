@@ -71,7 +71,7 @@ var tracker = function() {
     $.getJSON(API_SERVER + "service/geoJSON.php?featureType=currentLocation", function(data){
       var coord = data.features[0].geometry.coordinates;
       var text = "Viimeisin sijaintitieto klo: ";
-      var time = new Date(lastPoint.time*1000);
+      var time = new Date(data.features[0].properties.time * 1000);
       var icon = L.AwesomeMarkers.icon({
         prefix: "fa",
         icon: "circle",
