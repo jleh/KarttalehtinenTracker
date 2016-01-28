@@ -38,6 +38,8 @@ var tracker = function() {
     getImages();
     getPlaceMarkers();
 
+    setPlaceLinks();
+
     setInterval(function() {updateRoute();}, 10000);
     setInterval(getNewImages, 10000);
     setInterval(drawNewRoute, 3000);
@@ -174,12 +176,20 @@ var tracker = function() {
           var text = "<strong>" + feature.properties.name + "</strong><br>" + feature.properties.description;
 
           placeMarkers[feature.properties.name] = marker;
-
           marker.bindPopup(text);
 
           return marker;
         }
       }).addTo(map);
+    });
+  }
+
+  function setPlaceLinks() {
+    $(".place-link").click(function (e) {
+      var place = $(this).data("name");
+
+      map.setView(placeMarkers[place].getLatLng(), 11);
+      e.preventDefault();
     });
   }
 
