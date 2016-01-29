@@ -165,7 +165,8 @@ var tracker = function() {
     
     var icons = {
       "sleep":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "bed" }),
-      "lunch":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "cutlery" })
+      "lunch":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "cutlery" }),
+      "finish":  L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "green", icon: "flag-checkered" })
     };
 
     $.getJSON(url, function (places) {
