@@ -96,6 +96,17 @@
       </div>
     </div>
 
+    <script id="tweet-template" type="text/html">
+      <img src="{{user.profile_image_url}}">
+      <a href="https://twitter.com/{{user.screen_name}}" target="_blank">@{{user.screen_name}}</a>
+      <div>{{{textWithEntities}}}</div>
+      {{#entities.media}}
+        <a href="{{url}}" target="_blank">
+          <img src="{{media_url}}" heigth="{{sizes.small.h}}" width="{{sizes.small.w}}" >
+        </a>
+      {{/entities.media}}
+    </script>
+
     <script async src="built.js"></script>
 
     <script>

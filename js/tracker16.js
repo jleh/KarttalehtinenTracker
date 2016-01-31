@@ -1,4 +1,4 @@
-/* global $, L */
+/* global $, L, Mustache */
 
 $(document).ready(function(){
     tracker.initialize();
@@ -14,9 +14,10 @@ var tracker = function() {
     var map;
     var geoJSONlayer;
     var lastPointMarker;
+    var loadedTweets;
 
     var placeMarkers = {};
-    
+
     var lastPoint = {
         time: 0,
         marker: undefined
@@ -37,12 +38,14 @@ var tracker = function() {
         addLastPoint();
         getImages();
         getPlaceMarkers();
+        getTweets();
 
         setPlaceLinks();
 
-        setInterval(function() {updateRoute();}, 10000);
+        setInterval(updateRoute, 10000);
         setInterval(getNewImages, 10000);
-        setInterval(drawNewRoute, 3000);
+        setInterval(drawNewRoute, 5000);
+        setInterval(getTweets, 60000);
 
         $("#description-toggle").click(function () {
             $("#info-area").removeClass("hidden-xs");
@@ -193,6 +196,50 @@ var tracker = function() {
             map.setView(placeMarkers[place].getLatLng(), 11);
             e.preventDefault();
         });
+    }
+
+    function getTweets() {
+        if (!loadedTweets)
+            loadedTweets = {};
+
+        console.log(loadedTweets);
+
+        $.getJSON("https://pacific-falls-72628.herokuapp.com/", function (tweets) {
+            var icon = L.AwesomeMarkers.icon({ prefix: "fa", markerColor: "blue", icon: "twitter" });
+
+            for (var i = 0; i < tweets.length; i++) {
+                var tweet = tweets[i];
+
+                if (!loadedTweets[tweet.id] && tweet.geo.type === "Point") {
+                    var marker = L.marker(tweet.geo.coordinates, { icon: icon })
+                        .addTo(map)
+                        .bindPopup(createTweetPopup(tweet), { maxWidth: 350 });
+
+                    loadedTweets[tweet.id] = marker;
+                }
+            }
+        });
+    }
+
+    function createTweetPopup(tweet) {
+        var template = $("#tweet-template").html();
+        var textWithEntities = tweet.text;
+
+        if (tweet.entities.urls) {
+            for (var i = 0; i < tweet.entities.urls.length; i++) {
+                var url = tweet.entities.urls[i];
+                var link = '<a href="' + url.url + '" target="_blank">';
+                var ending = url.indices[1] + link.length;
+
+                textWithEntities = textWithEntities.slice(0, url.indices[0]) + link + textWithEntities.slice(url.indices[0]);
+                textWithEntities = textWithEntities.slice(0, ending) + '</a>' + textWithEntities.slice(ending);
+            }
+        }
+
+        tweet.textWithEntities = textWithEntities;
+        Mustache.parse(template);
+
+        return Mustache.render(template, tweet);
     }
 
     return {
